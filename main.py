@@ -1,6 +1,7 @@
-def main():
-    print("Hello from pysavor!")
+from fastapi import FastAPI
 
+app = FastAPI()
 
-if __name__ == "__main__":
-    main()
+@app.get("/hello")
+async def read_root():
+    return {"Hello": "World"}

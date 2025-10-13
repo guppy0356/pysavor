@@ -4,3 +4,7 @@ class UseCaseError(Exception):
 
 class UserAlreadyExistsError(UseCaseError):
     pass
+
+
+class AuthenticationError(UseCaseError):
+    pass

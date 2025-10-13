@@ -6,6 +6,9 @@ from src.schemas.user import UserCreate
 
 
 class UserRepositoryProtocol(Protocol):
+    def get_by_id(self, session: Session, *, id: int) -> User | None:
+        ...
+
     def get_by_email(self, session: Session, *, email: str) -> User | None:
         ...
 

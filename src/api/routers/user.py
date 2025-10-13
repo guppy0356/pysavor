@@ -21,7 +21,7 @@ def create_user(
     *,
     session: Session = Depends(current_session),
     user_create: UserCreate,
-):
+) -> UserRead:
     try:
         user_repository = UserRepository()
 

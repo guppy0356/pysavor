@@ -5,6 +5,9 @@ from src.schemas.user import UserCreate
 
 
 class UserRepository:
+    def get_by_id(self, session: Session, *, id: int) -> User | None:
+        return session.get(User, id)
+
     def get_by_email(self, session: Session, *, email: str) -> User | None:
         return session.query(User).filter(User.email == email).first()
 

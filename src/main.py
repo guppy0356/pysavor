@@ -2,11 +2,13 @@ from fastapi import FastAPI
 
 from src.api.routers import user
 from src.api.routers import auth
+from src.api.routers import issue
 
 app = FastAPI(title="pysavor")
 
 app.include_router(user.router, prefix="/api/v1/users")
 app.include_router(auth.router, prefix="/api/v1/auth")
+app.include_router(issue.router, prefix="/api/v1/issues")
 
 
 @app.get("/")

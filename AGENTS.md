@@ -467,18 +467,15 @@ from src.models.user import User
 from src.schemas.user import UserCreate
 
 class UserRepositoryProtocol(Protocol):
-    @staticmethod
-    def get_by_id(session: Session, *, id: int) -> User | None:
+    def get_by_id(self, session: Session, *, id: int) -> User | None:
         """IDでユーザーを取得"""
         ...
 
-    @staticmethod
-    def get_by_email(session: Session, *, email: str) -> User | None:
+    def get_by_email(self, session: Session, *, email: str) -> User | None:
         """メールアドレスでユーザーを取得"""
         ...
 
-    @staticmethod
-    def create(session: Session, *, user_create: UserCreate, hashed_password: str) -> User:
+    def create(self, session: Session, *, user_create: UserCreate, hashed_password: str) -> User:
         """新しいユーザーを作成"""
         ...
 ```
@@ -502,23 +499,19 @@ from src.models.user import User
 from src.schemas.issue import IssueCreate
 
 class IssueRepositoryProtocol(Protocol):
-    @staticmethod
-    def get_by_id(session: Session, *, id: int) -> Issue | None:
+    def get_by_id(self, session: Session, *, id: int) -> Issue | None:
         """IDでIssueを取得"""
         ...
 
-    @staticmethod
-    def find_by_scope(session: Session, *, scope: Any) -> Sequence[Issue]:
+    def find_by_scope(self, session: Session, *, scope: Any) -> Sequence[Issue]:
         """スコープ（SQLAlchemyフィルタ）でIssueを検索"""
         ...
 
-    @staticmethod
-    def create(session: Session, *, issue_create: IssueCreate, owner_id: int) -> Issue:
+    def create(self, session: Session, *, issue_create: IssueCreate, owner_id: int) -> Issue:
         """新しいIssueを作成"""
         ...
 
-    @staticmethod
-    def add_collaborator(session: Session, *, issue: Issue, user: User) -> None:
+    def add_collaborator(self, session: Session, *, issue: Issue, user: User) -> None:
         """Issueに共同作業者を追加"""
         ...
 ```
@@ -532,37 +525,34 @@ class IssueRepositoryProtocol(Protocol):
 User リポジトリの実装。
 
 ```python
-from sqlmodel import Session, select
+from sqlmodel import Session
 from src.models.user import User
 from src.schemas.user import UserCreate
 
 class UserRepository:
-    @staticmethod
-    def get_by_id(session: Session, *, id: int) -> User | None:
+    def get_by_id(self, session: Session, *, id: int) -> User | None:
         return session.get(User, id)
 
-    @staticmethod
-    def get_by_email(session: Session, *, email: str) -> User | None:
-        statement = select(User).where(User.email == email)
-        return session.exec(statement).first()
+    def get_by_email(self, session: Session, *, email: str) -> User | None:
+        return session.query(User).filter(User.email == email).first()
 
-    @staticmethod
-    def create(session: Session, *, user_create: UserCreate, hashed_password: str) -> User:
-        user = User(
-            email=user_create.email,
-            full_name=user_create.full_name,
-            hashed_password=hashed_password
-        )
-        session.add(user)
+    def create(self, session: Session, *, user_create: UserCreate, hashed_password: str) -> User:
+        user_data = user_create.model_dump()
+        user_data.pop("password", None)
+
+        new_user = User(**user_data, hashed_password=hashed_password)
+
+        session.add(new_user)
         session.commit()
-        session.refresh(user)
-        return user
+        session.refresh(new_user)
+
+        return new_user
 ```
 
 **実装パターン**:
-- 静的メソッドを使用
-- `session` を第一引数として受け取る
-- 読み取り操作は `select()` を使用
+- インスタンスメソッドを使用
+- `self, session` を引数として受け取る
+- 読み取り操作は `session.get()` または `session.query()` を使用
 - 書き込み操作は `add()` → `commit()` → `refresh()`
 
 ---
@@ -579,34 +569,31 @@ from src.models.user import User
 from src.schemas.issue import IssueCreate
 
 class IssueRepository:
-    @staticmethod
-    def get_by_id(session: Session, *, id: int) -> Issue | None:
-        statement = select(Issue).where(Issue.id == id)
-        return session.exec(statement).first()
+    def get_by_id(self, session: Session, *, id: int) -> Issue | None:
+        return session.get(Issue, id)
 
-    @staticmethod
-    def find_by_scope(session: Session, *, scope: Any) -> Sequence[Issue]:
+    def find_by_scope(self, session: Session, *, scope: Any) -> Sequence[Issue]:
         """ポリシーから返されたSQLAlchemyフィルタを適用"""
         statement = select(Issue).where(scope)
-        return session.exec(statement).all()
+        results = session.exec(statement)
+        return results.all()
 
-    @staticmethod
-    def create(session: Session, *, issue_create: IssueCreate, owner_id: int) -> Issue:
-        issue = Issue(
-            title=issue_create.title,
-            description=issue_create.description,
-            owner_id=owner_id
-        )
-        session.add(issue)
+    def create(self, session: Session, *, issue_create: IssueCreate, owner_id: int) -> Issue:
+        issue_data = issue_create.model_dump()
+
+        new_issue = Issue(**issue_data, owner_id=owner_id)
+
+        session.add(new_issue)
         session.commit()
-        session.refresh(issue)
-        return issue
+        session.refresh(new_issue)
 
-    @staticmethod
-    def add_collaborator(session: Session, *, issue: Issue, user: User) -> None:
+        return new_issue
+
+    def add_collaborator(self, session: Session, *, issue: Issue, user: User) -> None:
         issue.collaborators.append(user)
         session.add(issue)
         session.commit()
+        session.refresh(issue)
 ```
 
 **特徴**:
@@ -1435,13 +1422,11 @@ def resolve_scope(self):
 ```python
 # 抽象インターフェース (Protocol)
 class UserRepositoryProtocol(Protocol):
-    @staticmethod
-    def get_by_id(session: Session, *, id: int) -> User | None: ...
+    def get_by_id(self, session: Session, *, id: int) -> User | None: ...
 
 # 具象実装
 class UserRepository:
-    @staticmethod
-    def get_by_id(session: Session, *, id: int) -> User | None:
+    def get_by_id(self, session: Session, *, id: int) -> User | None:
         return session.get(User, id)
 ```
 
@@ -1470,7 +1455,7 @@ def create_user(
     user_repository: UserRepositoryProtocol,  # 抽象に依存
     user_create: UserCreate
 ) -> User:
-    return user_repository.create(...)
+    return user_repository.create(session, ...)
 ```
 
 ---

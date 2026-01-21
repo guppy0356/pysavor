@@ -13,3 +13,8 @@ dependencies = [
     "python-jose[cryptography]>=3.5.0",
     "sqlmodel>=0.0.25",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.13",
+]

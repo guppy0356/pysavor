@@ -16,6 +16,6 @@ class IssueRepositoryProtocol(Protocol):
     def create(self, session: Session, *, issue_create: IssueCreate, owner_id: int) -> Issue:
         ...
 
-    def add_collaborator(self, session: Session, *, issue: Issue, user: User) -> None:
+    def save(self, session: Session, *, issue: Issue) -> Issue:
         ...
 

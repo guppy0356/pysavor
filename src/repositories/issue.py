@@ -26,8 +26,9 @@ class IssueRepository:
 
         return new_issue
 
-    def add_collaborator(self, session: Session, *, issue: Issue, user: User) -> None:
-        issue.collaborators.append(user)
+    def save(self, session: Session, *, issue: Issue) -> Issue:
+        """Save an issue (persistence only)"""
         session.add(issue)
         session.commit()
         session.refresh(issue)
+        return issue

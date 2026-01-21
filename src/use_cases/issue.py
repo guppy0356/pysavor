@@ -25,8 +25,12 @@ def add_collaborator(
     issue: Issue,
     user_to_add: User,
 ) -> Issue:
-    issue_repository.add_collaborator(session=session, issue=issue, user=user_to_add)
-    return issue
+    """Add a collaborator to an issue"""
+    # Execute business logic via domain model method
+    issue.add_collaborator(user_to_add)
+    
+    # Persist via repository
+    return issue_repository.save(session=session, issue=issue)
 
 def get_my_issues(
     session: Session,

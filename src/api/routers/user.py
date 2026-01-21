@@ -30,7 +30,7 @@ def create_user(
         )
         return created_user
 
-    except UserAlreadyExistsError as e:
+    except UserAlreadyExistsError:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="A user with this email already exists.",

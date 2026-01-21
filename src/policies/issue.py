@@ -1,5 +1,5 @@
 from sqlalchemy import or_
-from sqlmodel import Session, select
+from sqlmodel import select
 
 from src.models.issue import Issue
 from src.models.user import User

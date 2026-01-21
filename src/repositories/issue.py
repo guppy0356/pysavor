@@ -2,7 +2,6 @@ from typing import Any, Sequence
 from sqlmodel import Session, select
 
 from src.models.issue import Issue
-from src.models.user import User
 from src.schemas.issue import IssueCreate
 
 

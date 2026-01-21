@@ -24,10 +24,10 @@ class Issue(SQLModel, table=True):
 
     def add_collaborator(self, user: "User") -> None:
         """Add a collaborator to this issue (domain logic)
-        
+
         Args:
             user: User to add as a collaborator
-            
+
         Raises:
             ValueError: If attempting to add the owner as a collaborator
         """

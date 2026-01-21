@@ -28,10 +28,7 @@ class IssuePolicy:
         if user_to_add.id == issue.owner_id:
             return False
 
-        if user_to_add in issue.collaborators:
-            return False
-
-        return True
+        return user_to_add not in issue.collaborators
 
     def resolve_scope(self):
         return or_(

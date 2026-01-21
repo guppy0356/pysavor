@@ -1,16 +1,16 @@
-from fastapi import Depends, HTTPException, Path, status, Request
-from jose import jwt, JWTError
+from fastapi import Depends, HTTPException, Path, Request, status
+from jose import JWTError, jwt
 from pydantic import ValidationError
 from sqlmodel import Session
 
 from src.db import current_session
-from src.models.user import User
 from src.models.issue import Issue
-from src.repositories.user import UserRepository
+from src.models.user import User
+from src.policies.issue import IssuePolicy
 from src.repositories.issue import IssueRepository
+from src.repositories.user import UserRepository
 from src.schemas.token import TokenPayload
 from src.settings import settings
-from src.policies.issue import IssuePolicy
 
 
 def get_token_from_cookie(request: Request) -> str | None:
@@ -27,7 +27,7 @@ def get_current_user(
             detail="Not authenticated",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
@@ -38,7 +38,7 @@ def get_current_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    
+
     user_repository = UserRepository()
 
     if token_data.sub is None:
@@ -46,12 +46,12 @@ def get_current_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Invalid token payload",
         )
-        
+
     user = user_repository.get_by_id(session, id=token_data.sub)
-    
+
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    
+
     return user
 
 def get_issue_by_id_from_path(

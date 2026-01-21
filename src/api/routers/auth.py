@@ -1,12 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session
 
 from src.api import deps
+from src.repositories.user import UserRepository
 from src.schemas import auth as auth_schema
+from src.settings import settings
 from src.use_cases import auth as auth_use_case
 from src.use_cases.exceptions import AuthenticationError
-from src.repositories.user import UserRepository
-from src.settings import settings
 
 router = APIRouter()
 
@@ -35,7 +35,7 @@ def login(
             secure=settings.COOKIE_SECURE,
             max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         )
-        
+
         return {"message": "Successfully logged in"}
 
     except AuthenticationError as e:

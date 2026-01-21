@@ -1,4 +1,6 @@
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
+
 from sqlmodel import Session, select
 
 from src.models.issue import Issue

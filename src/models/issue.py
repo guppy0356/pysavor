@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
 
 from sqlmodel import Field, Relationship, SQLModel
+
 from .collaborator import Collaborator
 
 if TYPE_CHECKING:
@@ -10,14 +11,14 @@ if TYPE_CHECKING:
 class Issue(SQLModel, table=True):
     __tablename__ = "issues"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
     title: str = Field(index=True)
-    description: Optional[str] = None
+    description: str | None = None
     owner_id: int = Field(foreign_key="users.id")
 
     owner: "User" = Relationship(back_populates="issues")
 
-    collaborators: List["User"] = Relationship(
+    collaborators: list["User"] = Relationship(
         back_populates="collaborated_issues", link_model=Collaborator
     )
 
@@ -33,10 +34,10 @@ class Issue(SQLModel, table=True):
         # Owner cannot be added as a collaborator
         if user.id == self.owner_id:
             raise ValueError("Owner cannot be added as a collaborator")
-        
+
         # Skip if already a collaborator
         if user in self.collaborators:
             return
-        
+
         # Add collaborator
         self.collaborators.append(user)

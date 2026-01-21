@@ -2,6 +2,7 @@ from sqlmodel import Session
 
 from src import security
 from src.protocols.user import UserRepositoryProtocol
+
 from .exceptions import AuthenticationError
 
 
@@ -20,5 +21,5 @@ def login(
         raise AuthenticationError("Incorrect email or password")
 
     access_token = security.create_access_token(subject=user.id)
-    
+
     return access_token

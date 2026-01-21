@@ -1,10 +1,10 @@
-from typing import Optional
+
 from pydantic import BaseModel, Field
 
 
 class UserBase(BaseModel):
     email: str
-    full_name: Optional[str] = None
+    full_name: str | None = None
 
 
 class UserCreate(UserBase):
@@ -16,6 +16,6 @@ class UserRead(UserBase):
 
 
 class UserUpdate(BaseModel):
-    email: Optional[str] = None
-    full_name: Optional[str] = None
-    password: Optional[str] = Field(default=None, min_length=8)
+    email: str | None = None
+    full_name: str | None = None
+    password: str | None = Field(default=None, min_length=8)

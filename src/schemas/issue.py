@@ -1,4 +1,3 @@
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -7,7 +6,7 @@ from .user import UserRead
 
 class IssueBase(BaseModel):
     title: str
-    description: Optional[str] = None
+    description: str | None = None
 
 
 class IssueCreate(IssueBase):
@@ -21,5 +20,5 @@ class IssueRead(IssueBase):
 
 
 class IssueUpdate(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
+    title: str | None = None
+    description: str | None = None

@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
 
 from sqlmodel import Field, Relationship, SQLModel
+
 from .collaborator import Collaborator
 
 if TYPE_CHECKING:
@@ -10,13 +11,13 @@ if TYPE_CHECKING:
 class User(SQLModel, table=True):
     __tablename__ = "users"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    full_name: Optional[str] = Field(default=None, index=True)
+    id: int | None = Field(default=None, primary_key=True)
+    full_name: str | None = Field(default=None, index=True)
     email: str = Field(unique=True, index=True)
     hashed_password: str
 
-    issues: List["Issue"] = Relationship(back_populates="owner")
+    issues: list["Issue"] = Relationship(back_populates="owner")
 
-    collaborated_issues: List["Issue"] = Relationship(
+    collaborated_issues: list["Issue"] = Relationship(
         back_populates="collaborators", link_model=Collaborator
     )

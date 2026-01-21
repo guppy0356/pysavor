@@ -1,4 +1,6 @@
-from typing import Any, Protocol, Sequence
+from collections.abc import Sequence
+from typing import Any, Protocol
+
 from sqlmodel import Session
 
 from src.models.issue import Issue

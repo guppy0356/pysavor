@@ -2,9 +2,9 @@ from sqlmodel import Session
 
 from src.models.issue import Issue
 from src.models.user import User
+from src.policies.issue import IssuePolicy
 from src.protocols.issue import IssueRepositoryProtocol
 from src.schemas.issue import IssueCreate
-from src.policies.issue import IssuePolicy
 
 
 def create_issue(
@@ -28,7 +28,7 @@ def add_collaborator(
     """Add a collaborator to an issue"""
     # Execute business logic via domain model method
     issue.add_collaborator(user_to_add)
-    
+
     # Persist via repository
     return issue_repository.save(session=session, issue=issue)
 

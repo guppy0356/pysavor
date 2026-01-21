@@ -1,9 +1,9 @@
 from sqlalchemy import or_
 from sqlmodel import select
 
+from src.models.collaborator import Collaborator
 from src.models.issue import Issue
 from src.models.user import User
-from src.models.collaborator import Collaborator
 
 
 class IssuePolicy:
@@ -24,13 +24,13 @@ class IssuePolicy:
     def can_add_collaborator(self, issue: Issue, user_to_add: User) -> bool:
         if self.user.id != issue.owner_id:
             return False
-        
+
         if user_to_add.id == issue.owner_id:
             return False
 
         if user_to_add in issue.collaborators:
             return False
-            
+
         return True
 
     def resolve_scope(self):

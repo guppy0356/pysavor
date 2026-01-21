@@ -1,8 +1,6 @@
 from fastapi import FastAPI
 
-from src.api.routers import user
-from src.api.routers import auth
-from src.api.routers import issue
+from src.api.routers import auth, issue, user
 
 app = FastAPI(title="pysavor")
 

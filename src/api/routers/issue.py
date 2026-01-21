@@ -2,12 +2,11 @@ from fastapi import APIRouter, Depends, status
 from sqlmodel import Session
 
 from src.api import deps
-from src.models.user import User
 from src.models.issue import Issue
-from src.schemas.issue import IssueRead, IssueCreate
+from src.models.user import User
 from src.repositories.issue import IssueRepository
 from src.repositories.user import UserRepository
-
+from src.schemas.issue import IssueCreate, IssueRead
 from src.use_cases import issue as issue_use_case
 
 router = APIRouter()
@@ -50,7 +49,7 @@ def add_collaborator(
 ):
     user_repository = UserRepository()
     issue_repository = IssueRepository()
-    
+
     user_to_add = user_repository.get_by_id(session=session, id=user_id)
     if not user_to_add:
         pass

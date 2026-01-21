@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 
-from src.db import current_session
-from src.schemas.user import UserRead, UserCreate
-from src.use_cases.exceptions import UserAlreadyExistsError
-from src.repositories.user import UserRepository
-
 import src.use_cases.user as user_use_case
+from src.db import current_session
+from src.repositories.user import UserRepository
+from src.schemas.user import UserCreate, UserRead
+from src.use_cases.exceptions import UserAlreadyExistsError
 
 router = APIRouter()
 

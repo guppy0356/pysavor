@@ -19,7 +19,5 @@ class UserRepository:
         new_user = User(**user_data, hashed_password=hashed_password)
 
         session.add(new_user)
-        session.commit()
-        session.refresh(new_user)
 
         return new_user

@@ -11,6 +11,7 @@ from src.repositories.issue import IssueRepository
 from src.repositories.user import UserRepository
 from src.schemas.token import TokenPayload
 from src.settings import settings
+from src.use_cases.user import UserUseCase
 
 
 def get_token_from_cookie(request: Request) -> str | None:
@@ -74,6 +75,10 @@ def get_user_by_id_from_path(
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user
+
+
+def get_user_use_case(session: Session = Depends(current_session)) -> UserUseCase:
+    return UserUseCase(session=session, user_repository=UserRepository())
 
 def can_create_issue(
     current_user: User = Depends(get_current_user),

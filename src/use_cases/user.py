@@ -8,21 +8,24 @@ from src.schemas.user import UserCreate
 from .exceptions import UserAlreadyExistsError
 
 
-def create_user(
-    session: Session,
-    *,
-    user_repository: UserRepositoryProtocol,
-    user_create: UserCreate
-) -> User:
-    existing_user = user_repository.get_by_email(session=session, email=user_create.email)
-    if existing_user:
-        raise UserAlreadyExistsError("User with this email already exists.")
+class UserUseCase:
+    def __init__(self, session: Session, user_repository: UserRepositoryProtocol):
+        self.session = session
+        self.user_repository = user_repository
 
-    hashed_password = security.get_password_hash(user_create.password)
+    def create_user(self, user_create: UserCreate) -> User:
+        existing_user = self.user_repository.get_by_email(session=self.session, email=user_create.email)
+        if existing_user:
+            raise UserAlreadyExistsError("User with this email already exists.")
 
-    new_user = user_repository.create(
-        session=session, user_create=user_create, hashed_password=hashed_password
-    )
+        hashed_password = security.get_password_hash(user_create.password)
 
-    return new_user
+        new_user = self.user_repository.create(
+            session=self.session, user_create=user_create, hashed_password=hashed_password
+        )
+
+        self.session.commit()
+        self.session.refresh(new_user)
+
+        return new_user
 

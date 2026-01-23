@@ -2,13 +2,44 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session
 
 from src.api import deps
+from src.api.deps import get_user_use_case
 from src.repositories.user import UserRepository
 from src.schemas import auth as auth_schema
+from src.schemas.user import UserCreate, UserRead
 from src.settings import settings
 from src.use_cases import auth as auth_use_case
-from src.use_cases.exceptions import AuthenticationError
+from src.use_cases.exceptions import AuthenticationError, UserAlreadyExistsError
+from src.use_cases.user import SignupInputData, UserUseCase
 
 router = APIRouter()
+
+
+@router.post(
+    "/signup",
+    response_model=UserRead,
+    status_code=status.HTTP_201_CREATED,
+    tags=["Auth"],
+)
+def signup(
+    *,
+    user_create: UserCreate,
+    use_case: UserUseCase = Depends(get_user_use_case),
+) -> UserRead:
+    try:
+        # PydanticモデルからSignupInputDataに変換
+        input_data = SignupInputData(
+            email=user_create.email,
+            password=user_create.password,
+            full_name=user_create.full_name,
+        )
+        created_user = use_case.signup(input_data=input_data)
+        return created_user
+
+    except UserAlreadyExistsError as err:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="A user with this email already exists.",
+        ) from err
 
 
 @router.post("/login", tags=["Authentication"])

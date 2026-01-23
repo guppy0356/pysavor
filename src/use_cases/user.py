@@ -9,7 +9,7 @@ from .exceptions import UserAlreadyExistsError
 
 
 @dataclass
-class CreateUserCommand:
+class SignupInputData:
     email: str
     password: str
     full_name: str | None = None
@@ -20,17 +20,17 @@ class UserUseCase:
         self.session = session
         self.user_repository = user_repository
 
-    def create_user(self, command: CreateUserCommand) -> User:
-        existing_user = self.user_repository.get_by_email(session=self.session, email=command.email)
+    def signup(self, input_data: SignupInputData) -> User:
+        existing_user = self.user_repository.get_by_email(session=self.session, email=input_data.email)
         if existing_user:
             raise UserAlreadyExistsError("User with this email already exists.")
 
-        hashed_password = security.get_password_hash(command.password)
+        hashed_password = security.get_password_hash(input_data.password)
 
         new_user = self.user_repository.create(
             session=self.session,
-            email=command.email,
-            full_name=command.full_name,
+            email=input_data.email,
+            full_name=input_data.full_name,
             hashed_password=hashed_password,
         )
 

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from sqlmodel import Session
 
 from src import security

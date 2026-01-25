@@ -9,7 +9,7 @@ from src.schemas.user import UserCreate, UserRead
 from src.settings import settings
 from src.use_cases import auth as auth_use_case
 from src.use_cases.exceptions import AuthenticationError, UserAlreadyExistsError
-from src.use_cases.user import SignupInputData, UserUseCase
+from src.use_cases.user import UserUseCase
 
 router = APIRouter()
 
@@ -26,13 +26,11 @@ def signup(
     use_case: UserUseCase = Depends(get_user_use_case),
 ) -> UserRead:
     try:
-        # PydanticモデルからSignupInputDataに変換
-        input_data = SignupInputData(
+        created_user = use_case.signup(
             email=user_create.email,
             password=user_create.password,
             full_name=user_create.full_name,
         )
-        created_user = use_case.signup(input_data=input_data)
         return created_user
 
     except UserAlreadyExistsError as err:

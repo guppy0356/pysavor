@@ -41,7 +41,7 @@ def signup(
         ) from err
 
 
-@router.post("/login", tags=["Authentication"])
+@router.post("/signin", tags=["Authentication"])
 def login(
     login_data: auth_schema.LoginRequest,
     response: Response,

@@ -1,15 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session
 
+from src.adapters.db.repositories.user import UserRepository
+from src.adapters.db.session import current_session
 from src.api import deps
 from src.api.deps import get_user_use_case
-from src.repositories.user import UserRepository
-from src.schemas import auth as auth_schema
-from src.schemas.user import UserCreate, UserRead
+from src.api.schemas import auth as auth_schema
+from src.api.schemas.user import UserCreate, UserRead
+from src.app import auth as auth_use_case
+from src.app.exceptions import AuthenticationError, UserAlreadyExistsError
+from src.app.user import UserUseCase
 from src.settings import settings
-from src.use_cases import auth as auth_use_case
-from src.use_cases.exceptions import AuthenticationError, UserAlreadyExistsError
-from src.use_cases.user import UserUseCase
 
 router = APIRouter()
 
@@ -44,7 +45,7 @@ def signup(
 def login(
     login_data: auth_schema.LoginRequest,
     response: Response,
-    session: Session = Depends(deps.current_session),
+    session: Session = Depends(current_session),
 ):
     user_repository = UserRepository()
 

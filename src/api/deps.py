@@ -3,15 +3,15 @@ from jose import JWTError, jwt
 from pydantic import ValidationError
 from sqlmodel import Session
 
-from src.db import current_session
-from src.models.issue import Issue
-from src.models.user import User
-from src.policies.issue import IssuePolicy
-from src.repositories.issue import IssueRepository
-from src.repositories.user import UserRepository
-from src.schemas.token import TokenPayload
+from src.adapters.db.models.issue import Issue
+from src.adapters.db.models.user import User
+from src.adapters.db.repositories.issue import IssueRepository
+from src.adapters.db.repositories.user import UserRepository
+from src.adapters.db.session import current_session
+from src.api.schemas.token import TokenPayload
+from src.app.user import UserUseCase
+from src.domain.policies.issue import IssuePolicy
 from src.settings import settings
-from src.use_cases.user import UserUseCase
 
 
 def get_token_from_cookie(request: Request) -> str | None:

@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends, status
 from sqlmodel import Session
 
+from src.adapters.db.models.issue import Issue
+from src.adapters.db.models.user import User
+from src.adapters.db.repositories.issue import IssueRepository
+from src.adapters.db.repositories.user import UserRepository
+from src.adapters.db.session import current_session
 from src.api import deps
-from src.models.issue import Issue
-from src.models.user import User
-from src.repositories.issue import IssueRepository
-from src.repositories.user import UserRepository
-from src.schemas.issue import IssueCreate, IssueRead
-from src.use_cases import issue as issue_use_case
+from src.api.schemas.issue import IssueCreate, IssueRead
+from src.app import issue as issue_use_case
 
 router = APIRouter()
 
@@ -21,7 +22,7 @@ router = APIRouter()
 )
 def create_issue(
     *,
-    session: Session = Depends(deps.current_session),
+    session: Session = Depends(current_session),
     current_user: User = Depends(deps.get_current_user),
     issue_in: IssueCreate,
 ):
@@ -32,7 +33,7 @@ def create_issue(
 
 @router.get("/me", response_model=list[IssueRead], tags=["Issues"])
 def read_my_issues(
-    session: Session = Depends(deps.current_session),
+    session: Session = Depends(current_session),
     current_user: User = Depends(deps.get_current_user),
 ):
     issue_repository = IssueRepository()
@@ -43,7 +44,7 @@ def read_my_issues(
 @router.post("/{issue_id}/collaborators/{user_id}", response_model=IssueRead, tags=["Issues"])
 def add_collaborator(
     *,
-    session: Session = Depends(deps.current_session),
+    session: Session = Depends(current_session),
     issue: Issue = Depends(deps.can_add_collaborator_to_issue),
     user_id: int,
 ):

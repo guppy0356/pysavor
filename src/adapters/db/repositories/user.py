@@ -1,6 +1,6 @@
 from sqlmodel import Session
 
-from src.models.user import User
+from src.adapters.db.models.user import User
 
 
 class UserRepository:

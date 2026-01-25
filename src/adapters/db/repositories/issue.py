@@ -3,8 +3,8 @@ from typing import Any
 
 from sqlmodel import Session, select
 
-from src.models.issue import Issue
-from src.schemas.issue import IssueCreate
+from src.adapters.db.models.issue import Issue
+from src.api.schemas.issue import IssueCreate
 
 
 class IssueRepository:

@@ -1,10 +1,10 @@
 from sqlmodel import Session
 
-from src.models.issue import Issue
-from src.models.user import User
-from src.policies.issue import IssuePolicy
-from src.protocols.issue import IssueRepositoryProtocol
-from src.schemas.issue import IssueCreate
+from src.adapters.db.models.issue import Issue
+from src.adapters.db.models.user import User
+from src.api.schemas.issue import IssueCreate
+from src.domain.policies.issue import IssuePolicy
+from src.domain.ports.issue import IssueRepositoryProtocol
 
 
 def create_issue(

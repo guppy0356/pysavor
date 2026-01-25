@@ -107,56 +107,100 @@ HTTP リクエスト
 │   └── development.db            # SQLite データベースファイル
 │
 └── src/                          # メインソースコード
-    ├── __init__.py               # パッケージ初期化（全モデルを自動ロード）
+    ├── __init__.py               # パッケージ初期化
     ├── main.py                   # FastAPI アプリケーションエントリーポイント
-    ├── db.py                     # データベース接続管理
     ├── settings.py               # アプリケーション設定（pydantic-settings）
-    ├── security.py               # JWT とパスワードハッシング
+    ├── security.py               # JWT とパスワードハッシング（横断ユーティリティ）
     │
     ├── api/                      # APIレイヤー（HTTPハンドラ）
     │   ├── deps.py               # 依存性注入と認可ガード
-    │   └── routers/              # APIエンドポイントルーター
-    │       ├── auth.py           # 認証エンドポイント（login）
-    │       ├── user.py           # ユーザー管理エンドポイント
-    │       └── issue.py          # Issue 管理エンドポイント
+    │   ├── routers/              # APIエンドポイントルーター
+    │   │   ├── auth.py           # 認証エンドポイント（login）
+    │   │   └── issue.py          # Issue 管理エンドポイント
+    │   └── schemas/              # HTTP契約（Pydanticモデル）★ 新規配置
+    │       ├── user.py           # UserCreate, UserRead, UserUpdate
+    │       ├── issue.py          # IssueCreate, IssueRead, IssueUpdate
+    │       ├── token.py          # Token, TokenPayload
+    │       └── auth.py           # LoginRequest
     │
-    ├── use_cases/                # ビジネスロジックレイヤー
+    ├── app/                      # アプリケーション層（ビジネスロジック）★ use_casesから移動
     │   ├── exceptions.py         # ドメイン固有例外
     │   ├── user.py               # ユーザーユースケース（create_user）
     │   ├── auth.py               # 認証ユースケース（login）
     │   └── issue.py              # Issue ユースケース（create, read, collaborate）
     │
-    ├── policies/                 # 認可ルール（純粋Python）
-    │   └── issue.py              # Issue 認可ポリシー
+    ├── domain/                    # ドメイン層（ルールと抽象）★ 新規配置
+    │   ├── policies/              # 認可ルール（純粋Python）★ policiesから移動
+    │   │   └── issue.py          # Issue 認可ポリシー
+    │   └── ports/                 # 抽象インターフェース（typing.Protocol）★ protocolsから移動
+    │       ├── user.py           # UserRepositoryProtocol
+    │       └── issue.py          # IssueRepositoryProtocol
     │
-    ├── repositories/             # データアクセスレイヤー（ORM抽象化）
-    │   ├── user.py               # User リポジトリ
-    │   └── issue.py              # Issue リポジトリ
-    │
-    ├── protocols/                # 抽象インターフェース（typing.Protocol）
-    │   ├── user.py               # UserRepositoryProtocol
-    │   └── issue.py              # IssueRepositoryProtocol
-    │
-    ├── models/                   # SQLModel データベースモデル
-    │   ├── __init__.py           # 全テーブルモデルの自動ローダー
-    │   ├── user.py               # User エンティティ
-    │   ├── issue.py              # Issue エンティティ
-    │   └── collaborator.py       # Collaborator 結合テーブル
-    │
-    ├── schemas/                  # Pydantic データモデル（API契約）
-    │   ├── user.py               # UserCreate, UserRead, UserUpdate
-    │   ├── issue.py              # IssueCreate, IssueRead, IssueUpdate
-    │   ├── token.py              # Token, TokenPayload
-    │   └── auth.py               # LoginRequest
-    │
-    └── migrations/               # Alembic データベースマイグレーション
-        ├── env.py                # Alembic 環境設定
-        ├── script.py.mako        # マイグレーションテンプレート
-        └── versions/             # マイグレーションスクリプト
-            ├── f63635279097_create_initial_user_table.py
-            ├── 6b277d0147af_create_initial_issues_table.py
-            └── 875428da6c8e_create_initial_collaborators_table.py
+    └── adapters/                  # アダプター層（技術詳細）★ 新規配置
+        └── db/                    # データベースアダプター
+            ├── session.py         # データベース接続管理 ★ db.pyから移動
+            ├── models/            # SQLModel データベースモデル ★ modelsから移動
+            │   ├── __init__.py    # 全テーブルモデルの自動ローダー
+            │   ├── user.py        # User エンティティ
+            │   ├── issue.py       # Issue エンティティ
+            │   └── collaborator.py # Collaborator 結合テーブル
+            ├── repositories/      # データアクセス実装 ★ repositoriesから移動
+            │   ├── user.py        # User リポジトリ
+            │   └── issue.py       # Issue リポジトリ
+            └── migrations/        # Alembic データベースマイグレーション ★ migrationsから移動
+                ├── env.py         # Alembic 環境設定
+                ├── script.py.mako # マイグレーションテンプレート
+                └── versions/      # マイグレーションスクリプト
+                    ├── f63635279097_create_initial_user_table.py
+                    ├── 6b277d0147af_create_initial_issues_table.py
+                    └── 875428da6c8e_create_initial_collaborators_table.py
 ```
+
+### ディレクトリ構造の設計方針（2025-01-26 リファクタリング）
+
+**目的**: 「置き場所の意味が一発で分かる」「命名と境界がブレない」構造への整理
+
+#### 配置ルール
+
+1. **`src/api/schemas/`**: HTTP契約のみ（Pydanticモデル）
+   - APIのリクエスト/レスポンスのデータ構造を定義
+   - 外部との契約を明確化
+
+2. **`src/adapters/`**: I/Oと技術詳細のみ
+   - `adapters/db/`: SQLModel、Session、migrations、repository実装
+   - データベース関連の技術詳細を集約
+
+3. **`src/app/`**: HTTPを知らないビジネスロジック
+   - 旧`use_cases/`から移動
+   - FastAPI型に依存しない
+   - UseCase入力はDTOを作らず引数で受ける（必要になったら後で導入）
+
+4. **`src/domain/`**: ルールとportのみ
+   - `domain/policies/`: 認可ルール（旧`policies/`から移動）
+   - `domain/ports/`: repository protocol/interface（旧`protocols/`から移動）
+
+5. **`src/security.py`**: 横断ユーティリティとして固定
+   - JWT/Hashなどのセキュリティ機能
+   - `adapters/security/`への移動も可能だが、横断的性質を考慮して現状維持
+
+#### 移動マッピング（実施済み）
+
+- `src/schemas/*` → `src/api/schemas/*`
+- `src/models/*` → `src/adapters/db/models/*`
+- `src/migrations/*` → `src/adapters/db/migrations/*`
+- `src/db.py` → `src/adapters/db/session.py`
+- `src/repositories/*` → `src/adapters/db/repositories/*`
+- `src/protocols/*` → `src/domain/ports/*`
+- `src/policies/*` → `src/domain/policies/*`
+- `src/use_cases/*` → `src/app/*`
+
+#### 重要な制約
+
+- **最小差分で移行**: ロジック改修より「配置変更＋import修正」が中心
+- **動作が壊れないこと**: 型/テスト/起動が通ることを重視
+- **外部仕様を変えない**: APIレスポンスやリクエスト形を勝手に変更しない
+- **CQRS分割はしない**: Read/Writeモデル分離は行わない
+- **追加の設計大改造はしない**: domainエンティティ導入などは不要、現状維持でOK
 
 ---
 

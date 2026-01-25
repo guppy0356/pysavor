@@ -1,9 +1,9 @@
 from sqlalchemy import or_
 from sqlmodel import select
 
-from src.models.collaborator import Collaborator
-from src.models.issue import Issue
-from src.models.user import User
+from src.adapters.db.models.collaborator import Collaborator
+from src.adapters.db.models.issue import Issue
+from src.adapters.db.models.user import User
 
 
 class IssuePolicy:

@@ -6,20 +6,19 @@ from src.domain.ports.user import UserRepositoryProtocol
 from .exceptions import AuthenticationError
 
 
-def login(
-    session: Session,
-    *,
-    user_repository: UserRepositoryProtocol,
-    email: str,
-    password: str,
-) -> str:
-    user = user_repository.get_by_email(email=email)
-    if not user:
-        raise AuthenticationError("Incorrect email or password")
+class AuthUseCase:
+    def __init__(self, session: Session, user_repository: UserRepositoryProtocol):
+        self.session = session
+        self.user_repository = user_repository
 
-    if not security.verify_password(password, user.hashed_password):
-        raise AuthenticationError("Incorrect email or password")
+    def signin(self, *, email: str, password: str) -> str:
+        user = self.user_repository.get_by_email(email=email)
+        if not user:
+            raise AuthenticationError("Incorrect email or password")
 
-    access_token = security.create_access_token(subject=user.id)
+        if not security.verify_password(password, user.hashed_password):
+            raise AuthenticationError("Incorrect email or password")
 
-    return access_token
+        access_token = security.create_access_token(subject=user.id)
+
+        return access_token

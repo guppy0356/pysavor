@@ -1,13 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from sqlmodel import Session
 
-from src.adapters.db.repositories.user import UserRepository
-from src.adapters.db.session import current_session
-from src.api import deps
-from src.api.deps import get_user_use_case
+from src.api.deps import get_auth_use_case, get_user_use_case
 from src.api.schemas import auth as auth_schema
 from src.api.schemas.user import UserCreate, UserRead
-from src.app import auth as auth_use_case
+from src.app.auth import AuthUseCase
 from src.app.exceptions import AuthenticationError, UserAlreadyExistsError
 from src.app.user import UserUseCase
 from src.settings import settings
@@ -42,16 +38,13 @@ def signup(
 
 @router.post("/signin")
 def login(
+    *,
     login_data: auth_schema.LoginRequest,
     response: Response,
-    session: Session = Depends(current_session),
+    auth_use_case: AuthUseCase = Depends(get_auth_use_case),
 ):
-    user_repository = UserRepository(session)
-
     try:
-        access_token = auth_use_case.login(
-            session=session,
-            user_repository=user_repository,
+        access_token = auth_use_case.signin(
             email=login_data.email,
             password=login_data.password,
         )
@@ -67,10 +60,10 @@ def login(
 
         return {"message": "Successfully logged in"}
 
-    except AuthenticationError as e:
+    except AuthenticationError as err:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=str(e),
+            detail=str(err),
             headers={"WWW-Authenticate": "Bearer"},
-        ) from e
+        ) from err
 

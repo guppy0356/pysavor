@@ -9,6 +9,7 @@ from src.adapters.db.repositories.issue import IssueRepository
 from src.adapters.db.repositories.user import UserRepository
 from src.adapters.db.session import current_session
 from src.api.schemas.token import TokenPayload
+from src.app.auth import AuthUseCase
 from src.app.user import UserUseCase
 from src.domain.policies.issue import IssuePolicy
 from src.settings import settings
@@ -79,6 +80,10 @@ def get_user_by_id_from_path(
 
 def get_user_use_case(session: Session = Depends(current_session)) -> UserUseCase:
     return UserUseCase(session=session, user_repository=UserRepository(session))
+
+
+def get_auth_use_case(session: Session = Depends(current_session)) -> AuthUseCase:
+    return AuthUseCase(session=session, user_repository=UserRepository(session))
 
 def can_create_issue(
     current_user: User = Depends(get_current_user),

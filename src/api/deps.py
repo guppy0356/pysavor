@@ -40,7 +40,7 @@ def get_current_user(
             detail="Could not validate credentials",
         ) from err
 
-    user_repository = UserRepository()
+    user_repository = UserRepository(session)
 
     if token_data.sub is None:
         raise HTTPException(
@@ -48,7 +48,7 @@ def get_current_user(
             detail="Invalid token payload",
         )
 
-    user = user_repository.get_by_id(session, id=token_data.sub)
+    user = user_repository.get_by_id(id=token_data.sub)
 
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
@@ -70,15 +70,15 @@ def get_user_by_id_from_path(
     session: Session = Depends(current_session),
 ) -> User:
     """パスパラメータからuser_idを取得し、Userオブジェクトを返すDI。"""
-    user_repo = UserRepository()
-    user = user_repo.get_by_id(session=session, id=user_id)
+    user_repo = UserRepository(session)
+    user = user_repo.get_by_id(id=user_id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user
 
 
 def get_user_use_case(session: Session = Depends(current_session)) -> UserUseCase:
-    return UserUseCase(session=session, user_repository=UserRepository())
+    return UserUseCase(session=session, user_repository=UserRepository(session))
 
 def can_create_issue(
     current_user: User = Depends(get_current_user),

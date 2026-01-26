@@ -13,7 +13,7 @@ def login(
     email: str,
     password: str,
 ) -> str:
-    user = user_repository.get_by_email(session=session, email=email)
+    user = user_repository.get_by_email(email=email)
     if not user:
         raise AuthenticationError("Incorrect email or password")
 

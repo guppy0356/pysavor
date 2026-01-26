@@ -47,7 +47,7 @@ def login(
     response: Response,
     session: Session = Depends(current_session),
 ):
-    user_repository = UserRepository()
+    user_repository = UserRepository(session)
 
     try:
         access_token = auth_use_case.login(

@@ -48,10 +48,10 @@ def add_collaborator(
     issue: Issue = Depends(deps.can_add_collaborator_to_issue),
     user_id: int,
 ):
-    user_repository = UserRepository()
+    user_repository = UserRepository(session)
     issue_repository = IssueRepository()
 
-    user_to_add = user_repository.get_by_id(session=session, id=user_id)
+    user_to_add = user_repository.get_by_id(id=user_id)
     if not user_to_add:
         pass
 

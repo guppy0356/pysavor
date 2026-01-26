@@ -19,18 +19,18 @@ class UserUseCase:
         password: str,
         full_name: str | None = None,
     ) -> User:
-        existing_user = self.user_repository.get_by_email(session=self.session, email=email)
+        existing_user = self.user_repository.get_by_email(email=email)
         if existing_user:
             raise UserAlreadyExistsError("User with this email already exists.")
 
         hashed_password = security.get_password_hash(password)
 
-        new_user = self.user_repository.create(
-            session=self.session,
+        new_user = User(
             email=email,
             full_name=full_name,
             hashed_password=hashed_password,
         )
+        self.user_repository.add(new_user)
 
         self.session.commit()
         self.session.refresh(new_user)

@@ -1,29 +1,17 @@
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from src.adapters.db.models.user import User
 
 
 class UserRepository:
-    def get_by_id(self, session: Session, *, id: int) -> User | None:
-        return session.get(User, id)
+    def __init__(self, session: Session):
+        self.session = session
 
-    def get_by_email(self, session: Session, *, email: str) -> User | None:
-        return session.query(User).filter(User.email == email).first()
+    def get_by_id(self, *, id: int) -> User | None:
+        return self.session.get(User, id)
 
-    def create(
-        self,
-        session: Session,
-        *,
-        email: str,
-        full_name: str | None,
-        hashed_password: str,
-    ) -> User:
-        new_user = User(
-            email=email,
-            full_name=full_name,
-            hashed_password=hashed_password,
-        )
+    def get_by_email(self, *, email: str) -> User | None:
+        return self.session.exec(select(User).where(User.email == email)).first()
 
-        session.add(new_user)
-
-        return new_user
+    def add(self, user: User) -> None:
+        self.session.add(user)

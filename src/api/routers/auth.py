@@ -12,14 +12,13 @@ from src.app.exceptions import AuthenticationError, UserAlreadyExistsError
 from src.app.user import UserUseCase
 from src.settings import settings
 
-router = APIRouter()
+router = APIRouter(tags=["Auth"])
 
 
 @router.post(
     "/signup",
     response_model=UserRead,
     status_code=status.HTTP_201_CREATED,
-    tags=["Auth"],
 )
 def signup(
     *,
@@ -41,7 +40,7 @@ def signup(
         ) from err
 
 
-@router.post("/signin", tags=["Authentication"])
+@router.post("/signin")
 def login(
     login_data: auth_schema.LoginRequest,
     response: Response,

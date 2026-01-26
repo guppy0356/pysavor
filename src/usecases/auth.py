@@ -1,7 +1,7 @@
 from sqlmodel import Session
 
 from src import security
-from src.domain.ports.user import UserRepositoryProtocol
+from src.domain.interfaces.user_repository import UserRepositoryProtocol
 
 from .exceptions import AuthenticationError
 

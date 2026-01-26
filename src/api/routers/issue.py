@@ -1,14 +1,15 @@
 from fastapi import APIRouter, Depends, status
 from sqlmodel import Session
 
-from src.adapters.db.models.issue import Issue
-from src.adapters.db.models.user import User
+from src.domain.models.issue import Issue
+from src.domain.models.user import User
 from src.adapters.db.repositories.issue import IssueRepository
 from src.adapters.db.repositories.user import UserRepository
 from src.adapters.db.session import current_session
 from src.api import deps
-from src.api.schemas.issue import IssueCreate, IssueRead
-from src.app import issue as issue_use_case
+from src.api.contracts.requests.issue import IssueCreate
+from src.api.contracts.responses.issue import IssueRead
+from src.usecases import issue as issue_use_case
 
 router = APIRouter()
 

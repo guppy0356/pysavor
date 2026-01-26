@@ -1,8 +1,8 @@
 from sqlmodel import Session
 
 from src import security
-from src.adapters.db.models.user import User
-from src.domain.ports.user import UserRepositoryProtocol
+from src.domain.models.user import User
+from src.domain.interfaces.user_repository import UserRepositoryProtocol
 
 from .exceptions import UserAlreadyExistsError
 

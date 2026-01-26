@@ -11,10 +11,6 @@ class UserCreate(UserBase):
     password: str = Field(min_length=8)
 
 
-class UserRead(UserBase):
-    id: int
-
-
 class UserUpdate(BaseModel):
     email: str | None = None
     full_name: str | None = None

@@ -3,14 +3,14 @@ from jose import JWTError, jwt
 from pydantic import ValidationError
 from sqlmodel import Session
 
-from src.adapters.db.models.issue import Issue
-from src.adapters.db.models.user import User
+from src.domain.models.issue import Issue
+from src.domain.models.user import User
 from src.adapters.db.repositories.issue import IssueRepository
 from src.adapters.db.repositories.user import UserRepository
 from src.adapters.db.session import current_session
-from src.api.schemas.token import TokenPayload
-from src.app.auth import AuthUseCase
-from src.app.user import UserUseCase
+from src.api.contracts.responses.token import TokenPayload
+from src.usecases.auth import AuthUseCase
+from src.usecases.user import UserUseCase
 from src.domain.policies.issue import IssuePolicy
 from src.settings import settings
 

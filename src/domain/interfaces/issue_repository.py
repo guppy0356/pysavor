@@ -3,8 +3,8 @@ from typing import Any, Protocol
 
 from sqlmodel import Session
 
-from src.adapters.db.models.issue import Issue
-from src.api.schemas.issue import IssueCreate
+from src.domain.models.issue import Issue
+from src.api.contracts.requests.issue import IssueCreate
 
 
 class IssueRepositoryProtocol(Protocol):

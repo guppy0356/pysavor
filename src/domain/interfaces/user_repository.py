@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from src.adapters.db.models.user import User
+from src.domain.models.user import User
 
 
 class UserRepositoryProtocol(Protocol):

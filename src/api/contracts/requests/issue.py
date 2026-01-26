@@ -1,8 +1,6 @@
 
 from pydantic import BaseModel
 
-from .user import UserRead
-
 
 class IssueBase(BaseModel):
     title: str
@@ -11,12 +9,6 @@ class IssueBase(BaseModel):
 
 class IssueCreate(IssueBase):
     pass
-
-
-class IssueRead(IssueBase):
-    id: int
-    owner_id: int
-    owner: UserRead
 
 
 class IssueUpdate(BaseModel):

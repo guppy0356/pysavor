@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from src.api.deps import get_auth_use_case, get_user_use_case
-from src.api.schemas import auth as auth_schema
-from src.api.schemas.user import UserCreate, UserRead
-from src.app.auth import AuthUseCase
-from src.app.exceptions import AuthenticationError, UserAlreadyExistsError
-from src.app.user import UserUseCase
+from src.api.contracts.requests import auth as auth_schema
+from src.api.contracts.requests.user import UserCreate
+from src.api.contracts.responses.user import UserRead
+from src.usecases.auth import AuthUseCase
+from src.usecases.exceptions import AuthenticationError, UserAlreadyExistsError
+from src.usecases.user import UserUseCase
 from src.settings import settings
 
 router = APIRouter(tags=["Auth"])

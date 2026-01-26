@@ -24,10 +24,10 @@ router = APIRouter()
 def signup(
     *,
     user_create: UserCreate,
-    use_case: UserUseCase = Depends(get_user_use_case),
+    user_user_case: UserUseCase = Depends(get_user_use_case),
 ) -> UserRead:
     try:
-        created_user = use_case.signup(
+        created_user = user_user_case.signup(
             email=user_create.email,
             password=user_create.password,
             full_name=user_create.full_name,

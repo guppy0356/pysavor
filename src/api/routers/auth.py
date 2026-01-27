@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from src.api.deps import get_auth_use_case, get_user_use_case
-from src.api.contracts.requests import auth as auth_schema
+from src.api.contracts.requests.auth import LoginRequest
 from src.api.contracts.requests.user import UserCreate
 from src.api.contracts.responses.user import UserRead
 from src.usecases.auth import AuthUseCase
@@ -40,7 +40,7 @@ def signup(
 @router.post("/login")
 def login(
     *,
-    login_data: auth_schema.LoginRequest,
+    login_data: LoginRequest,
     response: Response,
     auth_use_case: AuthUseCase = Depends(get_auth_use_case),
 ):

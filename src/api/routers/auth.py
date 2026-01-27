@@ -40,14 +40,14 @@ def signup(
 @router.post("/login")
 def login(
     *,
-    login_data: LoginRequest,
+    credentials: LoginRequest,
     response: Response,
     auth_use_case: AuthUseCase = Depends(get_auth_use_case),
 ):
     try:
         access_token = auth_use_case.login(
-            email=login_data.email,
-            password=login_data.password,
+            email=credentials.email,
+            password=credentials.password,
         )
 
         response.set_cookie(

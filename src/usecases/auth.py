@@ -11,7 +11,7 @@ class AuthUseCase:
         self.session = session
         self.user_repository = user_repository
 
-    def signin(self, *, email: str, password: str) -> str:
+    def login(self, *, email: str, password: str) -> str:
         user = self.user_repository.get_by_email(email=email)
         if not user:
             raise AuthenticationError("Incorrect email or password")

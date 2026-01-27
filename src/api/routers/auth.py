@@ -37,7 +37,7 @@ def signup(
         ) from err
 
 
-@router.post("/signin")
+@router.post("/login")
 def login(
     *,
     login_data: auth_schema.LoginRequest,
@@ -45,7 +45,7 @@ def login(
     auth_use_case: AuthUseCase = Depends(get_auth_use_case),
 ):
     try:
-        access_token = auth_use_case.signin(
+        access_token = auth_use_case.login(
             email=login_data.email,
             password=login_data.password,
         )

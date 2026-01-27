@@ -1083,7 +1083,7 @@ from src.settings import Settings
 router = APIRouter()
 settings = Settings()
 
-@router.post("/signin")
+@router.post("/login")
 def login_endpoint(
     login_request: LoginRequest,
     response: Response,
@@ -1271,7 +1271,7 @@ alembic history
 
 ```
 1. クライアント
-   POST /api/v1/auth/signin
+   POST /api/v1/auth/login
    Body: {"email": "user@example.com", "password": "password123"}
    ↓
 2. auth.py ルーター (login_endpoint)

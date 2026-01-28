@@ -11,6 +11,7 @@ from src.adapters.db.session import current_session
 from src.api.contracts.responses.token import TokenPayload
 from src.usecases.auth import AuthUseCase
 from src.usecases.user import UserUseCase
+from src.usecases.interfaces.user import UserUseCaseProtocol
 from src.domain.policies.issue import IssuePolicy
 from src.settings import settings
 
@@ -78,7 +79,7 @@ def get_user_by_id_from_path(
     return user
 
 
-def get_user_use_case(session: Session = Depends(current_session)) -> UserUseCase:
+def get_user_use_case(session: Session = Depends(current_session)) -> UserUseCaseProtocol:
     return UserUseCase(session=session, user_repository=UserRepository(session))
 
 

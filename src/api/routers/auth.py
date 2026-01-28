@@ -6,7 +6,7 @@ from src.api.contracts.requests.user import UserCreate
 from src.api.contracts.responses.user import UserRead
 from src.usecases.auth import AuthUseCase
 from src.usecases.exceptions import AuthenticationError, UserAlreadyExistsError
-from src.usecases.user import UserUseCase
+from src.usecases.interfaces.user import UserUseCaseProtocol
 from src.settings import settings
 
 router = APIRouter(tags=["Auth"])
@@ -20,7 +20,7 @@ router = APIRouter(tags=["Auth"])
 def signup(
     *,
     user_create: UserCreate,
-    user_user_case: UserUseCase = Depends(get_user_use_case),
+    user_user_case: UserUseCaseProtocol = Depends(get_user_use_case),
 ) -> UserRead:
     try:
         created_user = user_user_case.signup(
